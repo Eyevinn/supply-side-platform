@@ -1,0 +1,15 @@
+{
+  "name": "eyevinn-supply-side-platform",
+  "version": "0.1.0",
+  "description": "Open Source Supply Side Platform in NodeJs by Eyevinn",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "devel@eyevinn.se",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "debug": "^4.1.1",
+    "restify": "^8.4.0"
+  }
+}

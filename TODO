@@ -1,0 +1,7 @@
+1. Receive request from publisher/site including IAB categories and title of content
+2. Create a bid request according to OpenRTB (2.x)
+3. Issue a bid request to a predefined set of suppliers (DSPs). Initially with a mock DSP
+4. Choose the highest bidder
+5. Respond to publisher with a VAST
+6. Return feedback to winner
+
