@@ -2,10 +2,22 @@ const restify = require('restify');
 const errs = require('restify-errors');
 const debug = require('debug')('ssp-engine');
 
-const DEFAULT_PUBLISHER_ID = 0x01;
-
 class SSPEngine {
   constructor(options) {
+    // Read from config
+    this.providers = [
+      {
+        name: "Mock DSP 1",
+        endpoint: "http://localhost:8081/mockdsp",
+        openRtbVersion: "2.2",
+      },
+      {
+        name: "Mock DSP 2",
+        endpoint: "http://localhost:8081/mockdsp",
+        openRtbVersion: "2.2",
+      },
+    ];
+
     this.server = restify.createServer();
     this.server.use(restify.plugins.queryParser());
 
@@ -23,7 +35,16 @@ class SSPEngine {
     debug('req.url=' + req.url);
     debug(req.query);
 
-    let publisherId = req.query['publisherId'] || DEFAULT_PUBLISHER_ID;
+    let siteId = req.query['siteId'];
+    // 1. Build Bid request
+
+    // 2. Issue bid to all DSPs in parallell
+
+    // 3. Evaluate responses for highest bidder
+
+    // 4. Respond to site
+
+    // 5. Respond to winner
     next();
   }
 
