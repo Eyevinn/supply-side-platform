@@ -1,6 +1,9 @@
 const restify = require('restify');
 const errs = require('restify-errors');
 const debug = require('debug')('ssp-engine');
+const fetch = require('node-fetch');
+
+const BidRequest = require('../openrtb/bid_request.js');
 
 class SSPEngine {
   constructor(options) {
@@ -8,13 +11,13 @@ class SSPEngine {
     this.providers = [
       {
         name: "Mock DSP 1",
-        endpoint: "http://localhost:8081/mockdsp",
-        openRtbVersion: "2.2",
+        endpoint: "http://localhost:8081/dsp",
+        openRtbVersion: "2.3",
       },
       {
         name: "Mock DSP 2",
-        endpoint: "http://localhost:8081/mockdsp",
-        openRtbVersion: "2.2",
+        endpoint: "http://localhost:8081/dsp",
+        openRtbVersion: "2.3",
       },
     ];
 
@@ -37,15 +40,64 @@ class SSPEngine {
 
     let siteId = req.query['siteId'];
     // 1. Build Bid request
+    
+    let noImps = Math.floor(req.query['dd'] / 15);
+    let videoImpressionsOffered = [];
+    for (let i = 0; i < noImps; i++) {
+      videoImpressionsOffered.push({
+        minDuration: 5, maxDuration: 15,
+        width: 1920, height: 1080,
+        bidFloor: 1.3
+      });
+    }
 
-    // 2. Issue bid to all DSPs in parallell
+    try {
+      let bidRequest = new BidRequest("1234", 2, videoImpressionsOffered);
+      debug(bidRequest.body());
 
-    // 3. Evaluate responses for highest bidder
+      // 2. Issue bid to all DSPs in parallell
+      let promises = [];
+      let bidResponses = [];
+      this.providers.forEach(provider => {
+        let p = new Promise((resolve, reject) => {
+          fetch(provider.endpoint, { method: 'POST', body: bidRequest.body().stringify(), headers: { 'content-type': 'application/json'} })
+          .then(resp => resp.json())
+          .then(bidResponse => {
+            bidResponses.push(bidResponse);
+            resolve();
+          });
+        });
+        promises.push(p);
+      });
 
-    // 4. Respond to site
+      // 3. Evaluate responses for highest bidder
+      Promise.all(promises)
+      .then(() => {
+        let allBids = [];
+        bidResponses.forEach(bidResponse => {
+          debug(bidResponse);
+          bidResponse.seatbid[0].bid.forEach(bid => {
+            allBids.push(bid);
+          });
+        });
+        let allBidsSorted = allBids.sort((a, b) => { b.price - a.price });
+        let winnerBid = allBidsSorted[0];
+        debug(winnerBid);
 
-    // 5. Respond to winner
-    next();
+        fetch(winnerBid.nurl)
+        .then(resp => resp.text())
+        .then(msg => {
+          // 4. Respond to site
+          res.send(msg);
+          next();
+        });
+      });
+
+    } catch (errObj) {
+      debug(errObj.errors);
+      const err = new errs.InternalServerError(errObj.message);
+      next(err);
+    }
   }
 
   _handleHealthCheck(req, res, next) {
