@@ -106,13 +106,15 @@ class SSPEngine {
         .then(() => {
           // TODO: Parse Ad Markup / VAST and construct new VAST instead of this ugly stuff...
           let response = "";
+          let seq = 1;
 
           adMarkups.forEach(markup => {
             let markupNoRoot = markup.replace("<VAST version=\"2.0\">", "");
             markupNoRoot = markupNoRoot.replace("</VAST>", "");
+            markupNoRoot = markupNoRoot.replace("<Ad ", `<Ad sequence="${seq++}" `);
             response = response + markupNoRoot;
           });
-          response = "<VAST version=\"2.0\">" + response + "</VAST>";
+          response = "<VAST version=\"3.0\">" + response + "</VAST>";
 
           // 4. Respond to site
           res.setHeader('content-type', 'application/xml');
