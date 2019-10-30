@@ -108,11 +108,11 @@ class SSPEngine {
           let response = "";
 
           adMarkups.forEach(markup => {
-            let markupNoRoot = markup.replace("<VAST version\"2.0\">", "");
+            let markupNoRoot = markup.replace("<VAST version=\"2.0\">", "");
             markupNoRoot = markupNoRoot.replace("</VAST>", "");
             response = response + markupNoRoot;
           });
-          response = response + "</VAST>";
+          response = "<VAST version=\"2.0\">" + response + "</VAST>";
 
           // 4. Respond to site
           res.setHeader('content-type', 'application/xml');

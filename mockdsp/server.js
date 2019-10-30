@@ -47,6 +47,7 @@ const MOCK_BIDS = [
 const ADS = {
   1: {
     id: 1,
+    title: "mock-ad-1",
     duration: 15,
     creative: {
       mediaFile: "http://testcontent.eyevinn.technology/ads/stswe19-teaser-15sek.mp4",
@@ -55,6 +56,7 @@ const ADS = {
   },
   2: {
     id: 2,
+    title: "mock-ad-2",
     duration: 15,
     creative: {
       mediaFile: "http://testcontent.eyevinn.technology/ads/stswe19-teaser-15sek.mp4",
@@ -63,6 +65,7 @@ const ADS = {
   },
   3: {
     id: 3,
+    title: "mock-ad-3",
     duration: 15,
     creative: {
       mediaFile: "http://testcontent.eyevinn.technology/ads/stswe19-teaser-15sek.mp4",
@@ -118,7 +121,8 @@ function handleBidWin(req, res, next) {
 
   let mediaFile = `<MediaFile delivery="progressive" type="video/mp4" width="${ad.creative.w}" height="${ad.creative.h}" scalable="true"><![CDATA[${ad.creative.mediaFile}]]></MediaFile>`;
   let tracking = `<Impression><![CDATA[http://localhost:8081/track/?price=${req.query.price}]]></Impression>`;
-  let videoAdMarkup = `<VAST version="2.0"><Ad id="${adId}"><Creatives><Creative id="video"><Linear><Duration>00:00:15</Duration><MediaFiles>${mediaFile}</MediaFiles></Linear></Creative></Creatives>${tracking}</Ad></VAST>`;
+  let adSystem = `<AdSystem>mock-adserver</AdSystem><AdTitle>${ad.title}</AdTitle>`;
+  let videoAdMarkup = `<VAST version="2.0"><Ad id="${adId}"><InLine>${adSystem}<Creatives><Creative id="video"><Linear><Duration>00:00:15</Duration><MediaFiles>${mediaFile}</MediaFiles></Linear></Creative></Creatives>${tracking}</InLine></Ad></VAST>`;
   res.setHeader('content-type', 'application/xml');
   res.sendRaw(videoAdMarkup);
   next();
