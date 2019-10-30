@@ -1,3 +1,5 @@
+![Overview Drawing](/overview.png)
+
 Startup a mock DSP endpoint
 
 ```
