@@ -112,6 +112,7 @@ class SSPEngine {
             markupNoRoot = markupNoRoot.replace("</VAST>", "");
             response = response + markupNoRoot;
           });
+          response = response + "</VAST>";
 
           // 4. Respond to site
           res.setHeader('content-type', 'application/xml');
