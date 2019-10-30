@@ -5,16 +5,12 @@ const openrtb = require('openrtb');
 const moment = require('moment');
 const ResponseBuilder = openrtb.getBuilder({ builderType: 'bidResponse' });
 
-const EXAMPLE_ADS = [
-  "http://testcontent.eyevinn.technology/ads/stswe19-teaser-15sek.mp4"
-];
-
 const MOCK_BIDS = [
   {
     status: 1,
     clearPrice: 0.9,
     adid: 1,
-    id: 'mock-ad-1',
+    id: '1',
     deal: 'mock-deal-1',
     impid: 'IMPID',
     price: 1.05,
@@ -26,15 +22,56 @@ const MOCK_BIDS = [
     status: 1,
     clearPrice: 0.9,
     adid: 2,
-    id: 'mock-ad-2',
+    id: '2',
     deal: 'mock-deal-2',
     impid: 'IMPID',
     price: 1.35,
-    nurl: 'http://localhost:8081/win?pid=1&price=${AUCTION_PRICE}',
+    nurl: 'http://localhost:8081/win?pid=2&price=${AUCTION_PRICE}',
     cid: '2000',
     crid: '2001'
+  },
+  {
+    status: 1,
+    clearPrice: 0.9,
+    adid: 3,
+    id: '3',
+    deal: 'mock-deal-3',
+    impid: 'IMPID',
+    price: 1.55,
+    nurl: 'http://localhost:8081/win?pid=3&price=${AUCTION_PRICE}',
+    cid: '3000',
+    crid: '3001'
   }
 ];
+
+const ADS = {
+  1: {
+    id: 1,
+    duration: 15,
+    creative: {
+      mediaFile: "http://testcontent.eyevinn.technology/ads/stswe19-teaser-15sek.mp4",
+      w: 1920, h: 1080,
+    }
+  },
+  2: {
+    id: 2,
+    duration: 15,
+    creative: {
+      mediaFile: "http://testcontent.eyevinn.technology/ads/stswe19-teaser-15sek.mp4",
+      w: 1920, h: 1080,
+    }
+  },
+  3: {
+    id: 3,
+    duration: 15,
+    creative: {
+      mediaFile: "http://testcontent.eyevinn.technology/ads/stswe19-teaser-15sek.mp4",
+      w: 1920, h: 1080,
+    }
+  }
+}
+
+let bidCounter = 1;
 
 function handleBidRequest(req, res, next) {
   debug('req.url=' + req.url);
@@ -51,7 +88,7 @@ function handleBidRequest(req, res, next) {
       let bidResponse = ResponseBuilder
       .timestamp(moment.utc().format())
       .status(1)
-      .id('1234-5678')
+      .id((bidCounter++).toString())
       .bidderName('eyevinn-mock-bidder')
       .seatbid([
         {
@@ -73,8 +110,15 @@ function handleBidRequest(req, res, next) {
 }
 
 function handleBidWin(req, res, next) {
-  let mediaFile = `<MediaFile delivery="progressive" type="video/mp4" width="1920" height="1080" scalable="true"><![CDATA[${EXAMPLE_ADS[0]}]]></MediaFile>`;
-  let videoAdMarkup = `<VAST version="2.0"><Ad id="stswe19-teaser"><Creatives><Creative id="video"><Linear><Duration>00:00:15</Duration><MediaFiles>${mediaFile}</MediaFiles></Linear></Creative></Creatives></Ad></VAST>`;
+  debug(req.query);
+  let pid = req.query['pid'];
+  let winBid = MOCK_BIDS.find(el => el.id === pid);
+  let adId = winBid.adid;
+  let ad = ADS[adId];
+
+  let mediaFile = `<MediaFile delivery="progressive" type="video/mp4" width="${ad.creative.w}" height="${ad.creative.h}" scalable="true"><![CDATA[${ad.creative.mediaFile}]]></MediaFile>`;
+  let tracking = `<Impression><![CDATA[http://localhost:8081/track/?price=${req.query.price}]]></Impression>`;
+  let videoAdMarkup = `<VAST version="2.0"><Ad id="${adId}"><Creatives><Creative id="video"><Linear><Duration>00:00:15</Duration><MediaFiles>${mediaFile}</MediaFiles></Linear></Creative></Creatives>${tracking}</Ad></VAST>`;
   res.setHeader('content-type', 'application/xml');
   res.sendRaw(videoAdMarkup);
   next();
