@@ -2,6 +2,10 @@ const restify = require('restify');
 const errs = require('restify-errors');
 const debug = require('debug')('ssp-engine');
 const fetch = require('node-fetch');
+const restifyCors = require('restify-cors-middleware');
+const cors = restifyCors({
+  origins: ['*']
+});
 
 const BidRequest = require('../openrtb/bid_request.js');
 
@@ -9,6 +13,8 @@ class SSPEngine {
   constructor(options) {
     this.providers = [];
     this.server = restify.createServer();
+    this.server.pre(cors.preflight);
+    this.server.use(cors.actual);
     this.server.use(restify.plugins.queryParser());
 
     this.server.get('/ssp', this._handleRequest.bind(this));
