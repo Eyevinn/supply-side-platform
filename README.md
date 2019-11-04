@@ -38,6 +38,12 @@ engine.addProvider({
 });
 ```
 
+or specify on the command line when starting the server:
+
+```
+$ DEBUG=* DSPS=http://localhost:8081/dsp?mock=1,http://localhost:8081/dsp?mock=1 node server.js
+```
+
 To obtain a video ad markup (VAST) for an Ad Pod from the SSP:
 
 ```
