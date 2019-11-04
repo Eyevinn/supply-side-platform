@@ -1,6 +1,6 @@
 const SSPEngine = require('./index.js');
 
-const engine = new SSPEngine();
+const engine = new SSPEngine({ healthCheck: '/healthcheck'});
 if (process.env.DSPS) {
   let providers = process.env.DSPS.split(',');
   let providerId = 1;

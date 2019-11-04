@@ -12,7 +12,11 @@ class SSPEngine {
     this.server.use(restify.plugins.queryParser());
 
     this.server.get('/ssp', this._handleRequest.bind(this));
-    this.server.get('/', this._handleHealthCheck.bind(this));
+    let hcendpoint = '/';
+    if (options && options.healthCheck) {
+      hcendpoint = options.healthCheck;
+    }
+    this.server.get(hcendpoint, this._handleHealthCheck.bind(this));
 
     this.bidCounter = 1;
   }
