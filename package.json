@@ -11,7 +11,7 @@
   "dependencies": {
     "debug": "^4.1.1",
     "moment": "^2.24.0",
-    "node-fetch": "^2.6.0",
+    "node-fetch": "^3.1.1",
     "openrtb": "^3.6.1",
     "restify": "^8.4.0",
     "restify-cors-middleware": "^1.1.1"
