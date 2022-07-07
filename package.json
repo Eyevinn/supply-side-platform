@@ -10,7 +10,7 @@
   "license": "Apache-2.0",
   "dependencies": {
     "debug": "^4.1.1",
-    "moment": "^2.24.0",
+    "moment": "^2.29.4",
     "node-fetch": "^2.6.0",
     "openrtb": "^3.6.1",
     "restify": "^8.4.0",
