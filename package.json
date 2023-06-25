@@ -13,7 +13,7 @@
     "moment": "^2.29.4",
     "node-fetch": "^2.6.7",
     "openrtb": "^3.6.1",
-    "restify": "^8.4.0",
+    "restify": "^11.1.0",
     "restify-cors-middleware": "^1.1.1"
   }
 }
